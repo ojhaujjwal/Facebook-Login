@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Scandiweb_FacebookLogin
+ *
+ * @category    Scandiweb
+ * @package     Scandiweb_FacebookLogin
+ * @author      Viktors Vipolzovs <info@scandiweb.com>
+ * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+ */
+-->
+<page>
+    <update handle="customer_account_login"/>
+
+    <body>
+        <referenceContainer name="customer.login.container">
+            <block class="Scandiweb\FacebookLogin\Block\Facebook" name="facebook.login" template="Scandiweb_FacebookLogin::facebook.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

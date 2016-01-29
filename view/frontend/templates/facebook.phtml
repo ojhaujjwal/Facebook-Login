@@ -1,0 +1,25 @@
+<?php
+/**
+ * Scandiweb_FacebookLogin
+ *
+ * @category    Scandiweb
+ * @package     Scandiweb_FacebookLogin
+ * @author      Viktors Vipolzovs <info@scandiweb.com>
+ * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+ */
+?>
+<?php /** @var \Scandiweb\FacebookLogin\Block\Facebook $this */ ?>
+
+<?php if($this->isEnabled()): ?>
+    <div class="block block-facebook-login">
+        <div class="block-title">
+            <strong id="block-login-connect-heading" role="heading" aria-level="2"><?php echo __('Facebook Login'); ?></strong>
+        </div>
+
+        <div class="block-content" aria-labelledby="block-social-connect-heading">
+            <a href="<?php echo $this->getLoginUrl(); ?>" class="action primary connect facebook" id="facebook-login">
+                <span><?php echo __('Sign in with Facebook'); ?></span>
+            </a>
+        </div>
+    </div>
+<?php endif; ?>

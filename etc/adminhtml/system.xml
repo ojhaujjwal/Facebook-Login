@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Scandiweb_FacebookLogin
+*
+* @category    Scandiweb
+* @package     Scandiweb_FacebookLogin
+* @author      Viktors Vipolzovs <info@scandiweb.com>
+* @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+*/
+-->
+<config>
+    <system>
+        <tab id="scandiweb" translate="label" sortOrder="400">
+            <label>Scandiweb</label>
+        </tab>
+
+        <section id="social_login" translate="label" showInDefault="1" showInWebsite="1">
+            <class>separator-top</class>
+            <label>Social Login</label>
+            <tab>scandiweb</tab>
+            <resource>Scandiweb_FacebookLogin::config_login</resource>
+
+            <group id="facebook_login" translate="label" type="text" showInDefault="1" showInWebsite="1">
+                <label>Facebook Login</label>
+                <field id="scope" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Facebook Login</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="api_key" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1">
+                    <label>App ID</label>
+                </field>
+
+                <field id="api_secret" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1">
+                    <label>App Secret</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
