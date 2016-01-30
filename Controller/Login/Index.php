@@ -11,6 +11,11 @@
 namespace Scandiweb\FacebookLogin\Controller\Login;
 
 use Exception;
+use Facebook\Exceptions\FacebookSDKException;
+use Facebook\GraphNodes\GraphUser;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Scandiweb\FacebookLogin\Api\CustomerRepositoryInterface;
+use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
@@ -20,19 +25,44 @@ class Index extends Action
 {
 
     /**
+     * Get a facebook user data
+     *
+     * @see https://developers.facebook.com/docs/graph-api/reference/user
+     */
+    const FIELDS = 'id,email,first_name,last_name,middle_name,gender';
+
+    /**
      * @var Facebook
      */
     private $facebook;
 
     /**
+     * @var Session
+     */
+    private $customerSession;
+
+    /**
+     * @var CustomerRepositoryInterface
+     */
+    private $customerRepository;
+
+    /**
      * Index constructor
      *
-     * @param Context  $context
-     * @param Facebook $facebook
+     * @param Context                     $context
+     * @param Facebook                    $facebook
+     * @param Session                     $customerSession
+     * @param CustomerRepositoryInterface $customerRepository
      */
-    public function __construct(Context $context, Facebook $facebook)
-    {
+    public function __construct(
+        Context $context,
+        Facebook $facebook,
+        Session $customerSession,
+        CustomerRepositoryInterface $customerRepository
+    ) {
         $this->facebook = $facebook;
+        $this->customerSession = $customerSession;
+        $this->customerRepository = $customerRepository;
 
         parent::__construct($context);
     }
@@ -49,9 +79,48 @@ class Index extends Action
         try {
             $accessToken = $facebookHelper->getAccessToken();
 
-            var_dump($accessToken);
+            if (isset($accessToken)) {
+                $facebookUser = $this->facebook->get(
+                    '/me?fields=' . static::FIELDS, $accessToken
+                )->getGraphUser();
+                $customer = $this->customerRepository->getByFacebookId(
+                    $facebookUser->getId()
+                );
+
+                if (!is_null($customer)) {
+                    $this->login($customer->getId());
+                } else {
+                    $this->create($facebookUser);
+                }
+            } else {
+                var_dump('Ooops 1');
+            }
+        } catch (FacebookSDKException $e) {
+            var_dump('Ooops 2');
         } catch (Exception $e) {
-            var_dump('Ooops');
+            var_dump('Ooops 3');
         }
+    }
+
+    /**
+     * Authorization customer by id
+     *
+     * @param int $customerId
+     * @throws NoSuchEntityException
+     */
+    private function login($customerId)
+    {
+        $this->customerSession->loginById($customerId);
+        $this->customerSession->regenerateId();
+    }
+
+    /**
+     * Create new user by using data from facebook
+     *
+     * @param GraphUser $facebookUser
+     */
+    private function create(GraphUser $facebookUser)
+    {
+        var_dump($facebookUser);
     }
 }
