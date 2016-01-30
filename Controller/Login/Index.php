@@ -13,6 +13,7 @@ namespace Scandiweb\FacebookLogin\Controller\Login;
 use Exception;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\GraphNodes\GraphUser;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Scandiweb\FacebookLogin\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Session;
@@ -42,6 +43,11 @@ class Index extends Action
     private $customerSession;
 
     /**
+     * @var CustomerInterface
+     */
+    private $customer;
+
+    /**
      * @var CustomerRepositoryInterface
      */
     private $customerRepository;
@@ -52,16 +58,19 @@ class Index extends Action
      * @param Context                     $context
      * @param Facebook                    $facebook
      * @param Session                     $customerSession
+     * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
         Context $context,
         Facebook $facebook,
         Session $customerSession,
+        CustomerInterface $customer,
         CustomerRepositoryInterface $customerRepository
     ) {
         $this->facebook = $facebook;
         $this->customerSession = $customerSession;
+        $this->customer = $customer;
         $this->customerRepository = $customerRepository;
 
         parent::__construct($context);
@@ -99,6 +108,7 @@ class Index extends Action
             var_dump('Ooops 2');
         } catch (Exception $e) {
             var_dump('Ooops 3');
+            var_dump($e->getMessage());
         }
     }
 
@@ -106,6 +116,7 @@ class Index extends Action
      * Authorization customer by id
      *
      * @param int $customerId
+     *
      * @throws NoSuchEntityException
      */
     private function login($customerId)
@@ -121,6 +132,11 @@ class Index extends Action
      */
     private function create(GraphUser $facebookUser)
     {
-        var_dump($facebookUser);
+        $this->customer->setEmail($facebookUser->getEmail());
+        $this->customer->setFirstname($facebookUser->getFirstName());
+        $this->customer->setLastname($facebookUser->getLastName());
+        $this->customer->setGender((int)($facebookUser->getGender() == 'male'));
+
+        $this->customerRepository->save($this->customer);
     }
 }

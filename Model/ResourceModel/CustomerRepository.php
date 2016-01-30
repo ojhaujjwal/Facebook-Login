@@ -27,7 +27,7 @@ class CustomerRepository extends MagentoCustomerRepository implements CustomerRe
         /** @var \Magento\Customer\Model\ResourceModel\Customer\Collection $collection */
         $collection = $this->customerFactory->create()->getCollection();
 
-        /** @var $customer \Magento\Customer\Api\Data\CustomerInterface */
+        /** @var $customer \Magento\Customer\Model\Customer */
         $customer = $collection
             ->addFieldToSelect('*')
             ->addAttributeToSelect('sf_id')
@@ -37,7 +37,7 @@ class CustomerRepository extends MagentoCustomerRepository implements CustomerRe
             ->getFirstItem();
 
         if ($customer->getId()) {
-            return $customer;
+            return $customer->getDataModel();
         }
 
         return null;
