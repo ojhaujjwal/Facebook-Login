@@ -54,11 +54,12 @@ class InstallData implements InstallDataInterface
             CustomerMetadataInterface::ENTITY_TYPE_CUSTOMER,
             'sf_id',
             [
-                'type'      => 'text',
-                'visible'   => false,
-                'required'  => true,
-                'unique' => true,
-                'note'      => 'Facebook Id',
+                'type'     => 'text',
+                'visible'  => false,
+                'required' => true,
+                'unique'   => true,
+                'system'   => 0,
+                'note'     => 'Facebook Id',
             ]
         );
 
@@ -66,11 +67,12 @@ class InstallData implements InstallDataInterface
             CustomerMetadataInterface::ENTITY_TYPE_CUSTOMER,
             'sf_access_token',
             [
-                'type'      => 'text',
-                'visible'   => false,
-                'required'  => true,
-                'unique' => true,
-                'note'      => 'Facebook Access Token',
+                'type'     => 'text',
+                'visible'  => false,
+                'required' => true,
+                'unique'   => true,
+                'system'   => 0,
+                'note'     => 'Facebook Access Token',
             ]
         );
     }

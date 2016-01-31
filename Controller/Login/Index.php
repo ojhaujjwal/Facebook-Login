@@ -11,6 +11,7 @@
 namespace Scandiweb\FacebookLogin\Controller\Login;
 
 use Exception;
+use Facebook\Authentication\AccessToken;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\GraphNodes\GraphUser;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -99,7 +100,8 @@ class Index extends Action
                 if (!is_null($customer)) {
                     $this->login($customer->getId());
                 } else {
-                    $this->create($facebookUser);
+                    $customer = $this->create($facebookUser, $accessToken);
+                    $this->login($customer->getId());
                 }
             } else {
                 var_dump('Ooops 1');
@@ -110,6 +112,8 @@ class Index extends Action
             var_dump('Ooops 3');
             var_dump($e->getMessage());
         }
+
+        $this->_redirect($this->_redirect->getRefererUrl());
     }
 
     /**
@@ -128,15 +132,20 @@ class Index extends Action
     /**
      * Create new user by using data from facebook
      *
-     * @param GraphUser $facebookUser
+     * @param GraphUser   $facebookUser
+     * @param AccessToken $accessToken
+     *
+     * @return CustomerInterface
      */
-    private function create(GraphUser $facebookUser)
+    private function create(GraphUser $facebookUser, AccessToken $accessToken)
     {
         $this->customer->setEmail($facebookUser->getEmail());
         $this->customer->setFirstname($facebookUser->getFirstName());
         $this->customer->setLastname($facebookUser->getLastName());
         $this->customer->setGender((int)($facebookUser->getGender() == 'male'));
+        $this->customer->setCustomAttribute('sf_id', $facebookUser->getId());
+        $this->customer->setCustomAttribute('sf_access_token', serialize($accessToken));
 
-        $this->customerRepository->save($this->customer);
+        return $this->customerRepository->save($this->customer);
     }
 }
