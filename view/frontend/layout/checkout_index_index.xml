@@ -12,6 +12,10 @@
 <page>
     <update handle="checkout_index_index"/>
 
+    <head>
+        <css src="Scandiweb_FacebookLogin::css/facebook.css" media="all"/>
+    </head>
+
     <body>
         <referenceContainer name="content">
             <block class="Scandiweb\FacebookLogin\Block\Facebook" name="facebook.login" before="-" template="Scandiweb_FacebookLogin::facebook.phtml"/>

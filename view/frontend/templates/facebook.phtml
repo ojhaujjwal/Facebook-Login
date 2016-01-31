@@ -13,10 +13,10 @@
 <?php if($this->isEnabled() && !$this->isLoggedIn()): ?>
     <div class="block block-facebook-login">
         <div class="block-title">
-            <strong id="block-login-connect-heading" role="heading" aria-level="2"><?php echo __('Facebook Login'); ?></strong>
+            <strong id="block-facebook-login-heading" role="heading" aria-level="2"><?php echo __('Facebook Login'); ?></strong>
         </div>
 
-        <div class="block-content" aria-labelledby="block-social-connect-heading">
+        <div class="block-content" aria-labelledby="block-facebook-login-heading">
             <a href="<?php echo $this->getLoginUrl(); ?>" class="action primary connect facebook" id="facebook-login">
                 <span><?php echo __('Sign in with Facebook'); ?></span>
             </a>

@@ -1,0 +1,93 @@
+/**
+ * Scandiweb_FacebookLogin
+ *
+ * @category    Scandiweb
+ * @package     Scandiweb_FacebookLogin
+ * @author      Viktors Vipolzovs <info@scandiweb.com>
+ * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+ */
+
+@facebook-color: #5b74a8;
+
+.block-facebook-login {
+  a.action.facebook {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: @facebook-color;
+    border-color: @facebook-color;
+    text-align: center;
+
+    @media (min-width: 768px) {
+      width: 200px;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: darken(@facebook-color, 10%);
+      border-color: darken(@facebook-color, 10%);
+
+    }
+  }
+}
+
+.customer-account-login {
+  .block-facebook-login {
+    width: 100%;
+  }
+}
+
+.customer-account-create.page-layout-2columns-right {
+  @media (min-width: 768px) {
+    .column.main,
+    .sidebar-main {
+      width: 50%;
+    }
+
+    .column.main {
+      padding-right: 2%;
+
+      .form.create.account {
+        width: 100%;
+        min-width: inherit;
+      }
+    }
+  }
+
+  .sidebar-main {
+    .block-facebook-login .block-title {
+      margin: 0 0 20px;
+      padding: 0 0 10px;
+      width: 100%;
+      box-sizing: border-box;
+      float: left;
+      font-weight: 300;
+      line-height: 1.2;
+      font-size: 2.1rem;
+      border-bottom: 1px solid #c6c6c6;
+
+      strong {
+        font-size: 2.2rem;
+        font-weight: 300;
+      }
+    }
+  }
+}
+
+
+.checkout-index-index {
+  .block-facebook-login {
+    margin-bottom: 60px;
+
+    a.action.facebook {
+      margin: 0;
+    }
+
+    @media (min-width: 768px) {
+      margin: 0 0 30px 0;
+    }
+
+    .block-title {
+      display: none;
+    }
+  }
+}

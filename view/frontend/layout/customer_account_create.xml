@@ -12,6 +12,10 @@
 <page layout="2columns-right">
     <update handle="customer_account_create"/>
 
+    <head>
+        <css src="Scandiweb_FacebookLogin::css/facebook.css" media="all"/>
+    </head>
+
     <body>
         <referenceBlock name="catalog.compare.sidebar" remove="true"/>
         <referenceBlock name="wishlist_sidebar" remove="true"/>

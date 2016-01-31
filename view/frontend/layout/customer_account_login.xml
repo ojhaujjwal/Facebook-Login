@@ -12,6 +12,10 @@
 <page>
     <update handle="customer_account_login"/>
 
+    <head>
+        <css src="Scandiweb_FacebookLogin::css/facebook.css" media="all"/>
+    </head>
+
     <body>
         <referenceContainer name="customer.login.container">
             <block class="Scandiweb\FacebookLogin\Block\Facebook" name="facebook.login" template="Scandiweb_FacebookLogin::facebook.phtml"/>

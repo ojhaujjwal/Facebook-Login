@@ -183,6 +183,7 @@ class Index extends Action
             $this->customer->setEmail($facebookUser->getEmail());
             $this->customer->setFirstname($facebookUser->getFirstName());
             $this->customer->setLastname($facebookUser->getLastName());
+            $this->customer->setMiddlename($facebookUser->getMiddleName());
             $this->customer->setGender(
                 (int)($facebookUser->getGender() == 'male')
             );
