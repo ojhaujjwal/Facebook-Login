@@ -16,5 +16,9 @@
         <referenceContainer name="customer.login.container">
             <block class="Scandiweb\FacebookLogin\Block\Facebook" name="facebook.login" template="Scandiweb_FacebookLogin::facebook.phtml"/>
         </referenceContainer>
+
+        <referenceContainer name="page.messages">
+            <block class="Scandiweb\SocialConnect\Block\Messages" name="scandiweb.facebooklogin.message"/>
+        </referenceContainer>
     </body>
 </page>

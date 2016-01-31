@@ -9,17 +9,10 @@
  * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
  */
 -->
-<page layout="2columns-right">
-    <update handle="customer_account_create"/>
+<page>
+    <update handle="customer_account_index"/>
 
     <body>
-        <referenceBlock name="catalog.compare.sidebar" remove="true"/>
-        <referenceBlock name="wishlist_sidebar" remove="true"/>
-
-        <referenceContainer name="sidebar.main">
-            <block class="Scandiweb\FacebookLogin\Block\Facebook" name="facebook.login" template="Scandiweb_FacebookLogin::facebook.phtml"/>
-        </referenceContainer>
-
         <referenceContainer name="page.messages">
             <block class="Scandiweb\SocialConnect\Block\Messages" name="scandiweb.facebooklogin.message"/>
         </referenceContainer>

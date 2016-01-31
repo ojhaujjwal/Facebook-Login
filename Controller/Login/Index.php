@@ -144,7 +144,7 @@ class Index extends Action
             $this->logger->addError($e->getMessage());
 
             $this->messageManager->addError(__(
-                "Some of required values is not received. Please, check your Facebook settings.\n"
+                "Some of required values is not received. Please, check your Facebook settings."
                 . "Required fields: email, first name, last name."
             ));
         } catch (Exception $e) {
