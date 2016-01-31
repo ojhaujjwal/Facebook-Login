@@ -4,6 +4,8 @@ Facebook Login is a Magento 2 extension allowing your customers to login or crea
 
 ## Installation
 
+Run ```composer require scandiweb/facebook-login```
+
 ## Configuration
 
 For Facebook Login to work you need to [Setup Application on Facebook](https://developers.facebook.com/apps) and obtain App ID and App Secret.
