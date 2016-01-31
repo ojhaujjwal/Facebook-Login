@@ -15,14 +15,13 @@ use Facebook\Authentication\AccessToken;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\GraphNodes\GraphUser;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\InputException;
 use Scandiweb\FacebookLogin\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Scandiweb\FacebookLogin\Logger\Logger;
-use Magento\Store\Model\StoreManagerInterface;
 use Scandiweb\FacebookLogin\Model\Facebook\Facebook;
 
 class Index extends Action
@@ -56,11 +55,6 @@ class Index extends Action
     private $customerRepository;
 
     /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var Logger
      */
     private $logger;
@@ -73,7 +67,6 @@ class Index extends Action
      * @param Session                     $customerSession
      * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
-     * @param StoreManagerInterface       $storeManager
      * @param Logger                      $logger
      */
     public function __construct(
@@ -82,14 +75,12 @@ class Index extends Action
         Session $customerSession,
         CustomerInterface $customer,
         CustomerRepositoryInterface $customerRepository,
-        StoreManagerInterface $storeManager,
         Logger $logger
     ) {
         $this->facebook = $facebook;
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         $this->customerRepository = $customerRepository;
-        $this->storeManager = $storeManager;
         $this->logger = $logger;
 
         parent::__construct($context);
@@ -117,34 +108,51 @@ class Index extends Action
 
                 if (!is_null($customer)) {
                     $this->login($customer->getId());
-                } else {
-                    $this->customer = $this->customerRepository->get(
-                        $facebookUser->getEmail(),
-                        $this->storeManager->getWebsite()->getId()
-                    );
 
-                    $customer = $this->create($facebookUser, $accessToken);
-                    $this->login($customer->getId());
+                    $this->messageManager->addSuccess(__(
+                        "You have successfully logged in using your Facebook account."
+                    ));
+                } else {
+                    try {
+                        $this->customer = $this->customerRepository->get($facebookUser->getEmail());
+                    } finally {
+                        $customer = $this->createOrUpdate($facebookUser, $accessToken);
+                        $this->login($customer->getId());
+
+                        if ($this->customer->getId() == $customer->getId()) {
+                            $this->messageManager->addSuccess(__(
+                                "We have discovered you already have an account at our store."
+                                . " Your Facebook account is now connected to your store account."
+                            ));
+                        } else {
+                            $this->messageManager->addSuccess(__(
+                                "Your Facebook account is now connected to your new user account at our store."
+                            ));
+                        }
+                    }
                 }
             } else {
-                throw new FacebookSDKException('The facebook code is null');
+                throw new FacebookSDKException('The Facebook code is null');
             }
         } catch (FacebookSDKException $e) {
             $this->logger->addError($e->getMessage());
 
-            $this->messageManager->addError(
-                __(
-                    "Oops. Something went wrong! Please try again later."
-                )
-            );
+            $this->messageManager->addError(__(
+                "Oops. Something went wrong! Please try again later."
+            ));
+        } catch (InputException $e) {
+            $this->logger->addError($e->getMessage());
+
+            $this->messageManager->addError(__(
+                "Some of required values is not received. Please, check your Facebook settings.\n"
+                . "Required fields: email, first name, last name."
+            ));
         } catch (Exception $e) {
             $this->logger->addError($e->getMessage());
 
-            $this->messageManager->addError(
-                __(
-                    "Oops. Something went wrong! Please try again later."
-                )
-            );
+            $this->messageManager->addError(__(
+                "Oops. Something went wrong! Please try again later."
+            ));
         }
 
         $this->_redirect($this->_redirect->getRefererUrl());
@@ -154,8 +162,6 @@ class Index extends Action
      * Authorization customer by id
      *
      * @param int $customerId
-     *
-     * @throws NoSuchEntityException
      */
     private function login($customerId)
     {
@@ -164,14 +170,14 @@ class Index extends Action
     }
 
     /**
-     * Create new user by using data from facebook
+     * Create or update user by using data from facebook
      *
      * @param GraphUser   $facebookUser
      * @param AccessToken $accessToken
      *
      * @return CustomerInterface
      */
-    private function create(GraphUser $facebookUser, AccessToken $accessToken)
+    private function createOrUpdate(GraphUser $facebookUser, AccessToken $accessToken)
     {
         if (!$this->customer->getId()) {
             $this->customer->setEmail($facebookUser->getEmail());
