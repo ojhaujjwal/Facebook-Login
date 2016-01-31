@@ -13,6 +13,7 @@ namespace Scandiweb\FacebookLogin\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Scandiweb\FacebookLogin\Model\Facebook\Config;
+use Magento\Customer\Model\Session;
 use Scandiweb\FacebookLogin\Model\Facebook\Facebook as FacebookModel;
 
 class Facebook extends Template
@@ -29,21 +30,29 @@ class Facebook extends Template
     protected $facebook;
 
     /**
+     * @var Session
+     */
+    private $customerSession;
+
+    /**
      * Login constructor.
      *
      * @param Context       $context
      * @param array         $data
      * @param Config        $config
      * @param FacebookModel $facebook
+     * @param Session       $customerSession
      */
     public function __construct(
         Context $context,
         array $data,
         Config $config,
-        FacebookModel $facebook
+        FacebookModel $facebook,
+        Session $customerSession
     ) {
         $this->config = $config;
         $this->facebook = $facebook;
+        $this->customerSession = $customerSession;
 
         parent::__construct($context, $data);
     }
@@ -63,7 +72,15 @@ class Facebook extends Template
     {
         $facebookHelper = $this->facebook->getRedirectLoginHelper();
 
-        return $facebookHelper->getLoginUrl($this->getUrl('facebook/login'), ['email']);
+        return $facebookHelper->getLoginUrl($this->getUrl('facebook/login'), ['scope' => 'email']);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isLoggedIn()
+    {
+        return $this->customerSession->isLoggedIn();
     }
 
 }
