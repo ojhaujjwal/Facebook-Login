@@ -9,7 +9,22 @@
 * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
 */
 -->
-<config>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Scandiweb\FacebookLogin\Api\CustomerRepositoryInterface"
                 type="Scandiweb\FacebookLogin\Model\ResourceModel\CustomerRepository"/>
+
+    <type name="Scandiweb\FacebookLogin\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+
+    <type name="Scandiweb\FacebookLogin\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">facebookLogger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Scandiweb\FacebookLogin\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

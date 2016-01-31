@@ -21,6 +21,7 @@ use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
+use Scandiweb\FacebookLogin\Logger\Logger;
 use Scandiweb\FacebookLogin\Model\Facebook\Facebook;
 
 class Index extends Action
@@ -54,6 +55,11 @@ class Index extends Action
     private $customerRepository;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Index constructor
      *
      * @param Context                     $context
@@ -61,18 +67,21 @@ class Index extends Action
      * @param Session                     $customerSession
      * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
+     * @param Logger                      $logger
      */
     public function __construct(
         Context $context,
         Facebook $facebook,
         Session $customerSession,
         CustomerInterface $customer,
-        CustomerRepositoryInterface $customerRepository
+        CustomerRepositoryInterface $customerRepository,
+        Logger $logger
     ) {
         $this->facebook = $facebook;
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         $this->customerRepository = $customerRepository;
+        $this->logger = $logger;
 
         parent::__construct($context);
     }
@@ -113,6 +122,7 @@ class Index extends Action
             var_dump($e->getMessage());
         }
 
+        $this->logger->error('Some error');
         $this->_redirect($this->_redirect->getRefererUrl());
     }
 
