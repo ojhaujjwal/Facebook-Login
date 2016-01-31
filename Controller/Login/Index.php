@@ -22,6 +22,7 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Scandiweb\FacebookLogin\Logger\Logger;
+use Magento\Store\Model\StoreManagerInterface;
 use Scandiweb\FacebookLogin\Model\Facebook\Facebook;
 
 class Index extends Action
@@ -55,6 +56,11 @@ class Index extends Action
     private $customerRepository;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -67,6 +73,7 @@ class Index extends Action
      * @param Session                     $customerSession
      * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
+     * @param StoreManagerInterface       $storeManager
      * @param Logger                      $logger
      */
     public function __construct(
@@ -75,12 +82,14 @@ class Index extends Action
         Session $customerSession,
         CustomerInterface $customer,
         CustomerRepositoryInterface $customerRepository,
+        StoreManagerInterface $storeManager,
         Logger $logger
     ) {
         $this->facebook = $facebook;
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         $this->customerRepository = $customerRepository;
+        $this->storeManager = $storeManager;
         $this->logger = $logger;
 
         parent::__construct($context);
@@ -109,20 +118,35 @@ class Index extends Action
                 if (!is_null($customer)) {
                     $this->login($customer->getId());
                 } else {
+                    $this->customer = $this->customerRepository->get(
+                        $facebookUser->getEmail(),
+                        $this->storeManager->getWebsite()->getId()
+                    );
+
                     $customer = $this->create($facebookUser, $accessToken);
                     $this->login($customer->getId());
                 }
             } else {
-                var_dump('Ooops 1');
+                throw new FacebookSDKException('The facebook code is null');
             }
         } catch (FacebookSDKException $e) {
-            var_dump('Ooops 2');
+            $this->logger->addError($e->getMessage());
+
+            $this->messageManager->addError(
+                __(
+                    "Oops. Something went wrong! Please try again later."
+                )
+            );
         } catch (Exception $e) {
-            var_dump('Ooops 3');
-            var_dump($e->getMessage());
+            $this->logger->addError($e->getMessage());
+
+            $this->messageManager->addError(
+                __(
+                    "Oops. Something went wrong! Please try again later."
+                )
+            );
         }
 
-        $this->logger->error('Some error');
         $this->_redirect($this->_redirect->getRefererUrl());
     }
 
@@ -149,12 +173,18 @@ class Index extends Action
      */
     private function create(GraphUser $facebookUser, AccessToken $accessToken)
     {
-        $this->customer->setEmail($facebookUser->getEmail());
-        $this->customer->setFirstname($facebookUser->getFirstName());
-        $this->customer->setLastname($facebookUser->getLastName());
-        $this->customer->setGender((int)($facebookUser->getGender() == 'male'));
+        if (!$this->customer->getId()) {
+            $this->customer->setEmail($facebookUser->getEmail());
+            $this->customer->setFirstname($facebookUser->getFirstName());
+            $this->customer->setLastname($facebookUser->getLastName());
+            $this->customer->setGender(
+                (int)($facebookUser->getGender() == 'male')
+            );
+        }
         $this->customer->setCustomAttribute('sf_id', $facebookUser->getId());
-        $this->customer->setCustomAttribute('sf_access_token', serialize($accessToken));
+        $this->customer->setCustomAttribute(
+            'sf_access_token', serialize($accessToken)
+        );
 
         return $this->customerRepository->save($this->customer);
     }
