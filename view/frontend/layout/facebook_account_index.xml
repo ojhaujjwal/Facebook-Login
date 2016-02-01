@@ -14,7 +14,6 @@
 
     <head>
         <title>Facebook Login</title>
-        <css src="Scandiweb_SocialConnect::css/connect.css" media="all"/>
     </head>
 
     <body>
@@ -25,7 +24,7 @@
         </referenceBlock>
 
         <referenceContainer name="content">
-            <block class="Scandiweb\SocialConnect\Block\Account" name="facebook.account" template="Scandiweb_FacebookLogin::account.phtml"/>
+            <block class="Scandiweb\FacebookLogin\Block\Account" name="facebook.account" template="Scandiweb_FacebookLogin::account.phtml"/>
         </referenceContainer>
     </body>
 </page>

@@ -15,6 +15,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\RequestInterface;
+use Scandiweb\FacebookLogin\Model\Facebook\Config;
 
 class Index extends Action
 {
@@ -30,19 +31,27 @@ class Index extends Action
     private $session;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * Index constructor.
      *
      * @param Context     $context
      * @param PageFactory $resultPageFactory
      * @param Session     $customerSession
+     * @param Config      $config
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
-        Session $customerSession
+        Session $customerSession,
+        Config $config
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->session = $customerSession;
+        $this->config = $config;
 
         parent::__construct($context);
     }
@@ -61,6 +70,10 @@ class Index extends Action
     {
         if (!$this->session->isLoggedIn()) {
             return $this->_redirect('customer/account/login');
+        }
+
+        if (!$this->config->isEnabled()) {
+            return $this->_redirect($this->_redirect->getRefererUrl());
         }
 
         return parent::dispatch($request);

@@ -14,7 +14,7 @@
 
     <body>
         <referenceContainer name="customer_account_navigation">
-            <block class="Magento\Framework\View\Element\Html\Link\Current" name="facebook-login">
+            <block class="Scandiweb\FacebookLogin\Block\Current" name="facebook-login">
                 <arguments>
                     <argument name="label" xsi:type="string" translate="true">Facebook Login</argument>
                     <argument name="path" xsi:type="string">facebook/account</argument>
