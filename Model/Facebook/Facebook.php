@@ -24,13 +24,15 @@ class Facebook extends FacebookSdk
      */
     public function __construct(Config $config)
     {
-        parent::__construct(
-            [
-                'app_id'                => $config->getApiKey(),
-                'app_secret'            => $config->getApiSecret(),
-                'default_graph_version' => $config->getVersion()
-            ]
-        );
+        if ($config->isEnabled()) {
+            parent::__construct(
+                [
+                    'app_id'                => $config->getApiKey(),
+                    'app_secret'            => $config->getApiSecret(),
+                    'default_graph_version' => $config->getVersion()
+                ]
+            );
+        }
     }
 
 }

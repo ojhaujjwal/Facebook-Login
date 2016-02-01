@@ -22,7 +22,9 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Scandiweb\FacebookLogin\Logger\Logger;
+use Scandiweb\FacebookLogin\Model\Facebook\Config;
 use Scandiweb\FacebookLogin\Model\Facebook\Facebook;
+use Magento\Framework\App\RequestInterface;
 
 class Index extends Action
 {
@@ -60,6 +62,11 @@ class Index extends Action
     private $logger;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * Index constructor
      *
      * @param Context                     $context
@@ -68,6 +75,7 @@ class Index extends Action
      * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
      * @param Logger                      $logger
+     * @param Config                      $config
      */
     public function __construct(
         Context $context,
@@ -75,13 +83,15 @@ class Index extends Action
         Session $customerSession,
         CustomerInterface $customer,
         CustomerRepositoryInterface $customerRepository,
-        Logger $logger
+        Logger $logger,
+        Config $config
     ) {
         $this->facebook = $facebook;
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         $this->customerRepository = $customerRepository;
         $this->logger = $logger;
+        $this->config = $config;
 
         parent::__construct($context);
     }
@@ -194,5 +204,21 @@ class Index extends Action
         );
 
         return $this->customerRepository->save($this->customer);
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return ResponseInterface
+     */
+    public function dispatch(RequestInterface $request)
+    {
+        if (!$this->config->isEnabled()) {
+            $this->_redirect($this->_redirect->getRefererUrl());
+        }
+
+        return parent::dispatch(
+            $request
+        );
     }
 }
