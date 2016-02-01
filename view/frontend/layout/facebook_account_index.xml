@@ -14,6 +14,7 @@
 
     <head>
         <title>Facebook Login</title>
+        <css src="Scandiweb_FacebookLogin::css/facebook.css" media="all"/>
     </head>
 
     <body>
@@ -25,6 +26,10 @@
 
         <referenceContainer name="content">
             <block class="Scandiweb\FacebookLogin\Block\Account" name="facebook.account" template="Scandiweb_FacebookLogin::account.phtml"/>
+        </referenceContainer>
+
+        <referenceContainer name="page.messages">
+            <block class="Scandiweb\SocialConnect\Block\Messages" name="scandiweb.facebooklogin.message"/>
         </referenceContainer>
     </body>
 </page>

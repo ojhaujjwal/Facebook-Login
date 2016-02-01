@@ -116,28 +116,37 @@ class Index extends Action
                     $facebookUser->getId()
                 );
 
-                if (!is_null($customer)) {
-                    $this->login($customer->getId());
+                if ($this->customerSession->getId()) {
+                    $this->customer = $this->customerSession->getCustomerData();
+                    $this->createOrUpdate($facebookUser, $accessToken);
 
                     $this->messageManager->addSuccess(__(
-                        "You have successfully logged in using your Facebook account."
+                        "Your Facebook account is now connected to your account at our store."
                     ));
                 } else {
-                    try {
-                        $this->customer = $this->customerRepository->get($facebookUser->getEmail());
-                    } finally {
-                        $customer = $this->createOrUpdate($facebookUser, $accessToken);
+                    if (!is_null($customer)) {
                         $this->login($customer->getId());
 
-                        if ($this->customer->getId() == $customer->getId()) {
-                            $this->messageManager->addSuccess(__(
-                                "We have discovered you already have an account at our store."
-                                . " Your Facebook account is now connected to your store account."
-                            ));
-                        } else {
-                            $this->messageManager->addSuccess(__(
-                                "Your Facebook account is now connected to your new user account at our store."
-                            ));
+                        $this->messageManager->addSuccess(__(
+                            "You have successfully logged in using your Facebook account."
+                        ));
+                    } else {
+                        try {
+                            $this->customer = $this->customerRepository->get($facebookUser->getEmail());
+                        } finally {
+                            $customer = $this->createOrUpdate($facebookUser, $accessToken);
+                            $this->login($customer->getId());
+
+                            if ($this->customer->getId() == $customer->getId()) {
+                                $this->messageManager->addSuccess(__(
+                                    "We have discovered you already have an account at our store."
+                                    . " Your Facebook account is now connected to your store account."
+                                ));
+                            } else {
+                                $this->messageManager->addSuccess(__(
+                                    "Your Facebook account is now connected to your new user account at our store."
+                                ));
+                            }
                         }
                     }
                 }
