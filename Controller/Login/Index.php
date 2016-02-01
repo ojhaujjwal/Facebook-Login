@@ -118,14 +118,15 @@ class Index extends Action
 
                 if ($this->customerSession->getId()) {
                     $this->customer = $this->customerSession->getCustomerData();
-                    $this->createOrUpdate($facebookUser, $accessToken);
+                    $this->createOrUpdateAndLogin($facebookUser, $accessToken);
 
                     $this->messageManager->addSuccess(__(
                         "Your Facebook account is now connected to your account at our store."
                     ));
                 } else {
                     if (!is_null($customer)) {
-                        $this->login($customer->getId());
+                        $this->customer = $customer;
+                        $this->createOrUpdateAndLogin($facebookUser, $accessToken);
 
                         $this->messageManager->addSuccess(__(
                             "You have successfully logged in using your Facebook account."
@@ -134,8 +135,7 @@ class Index extends Action
                         try {
                             $this->customer = $this->customerRepository->get($facebookUser->getEmail());
                         } finally {
-                            $customer = $this->createOrUpdate($facebookUser, $accessToken);
-                            $this->login($customer->getId());
+                            $customer = $this->createOrUpdateAndLogin($facebookUser, $accessToken);
 
                             if ($this->customer->getId() == $customer->getId()) {
                                 $this->messageManager->addSuccess(__(
@@ -189,14 +189,14 @@ class Index extends Action
     }
 
     /**
-     * Create or update user by using data from facebook
+     * Create or update user by using data from facebook and login to store
      *
      * @param GraphUser   $facebookUser
      * @param AccessToken $accessToken
      *
      * @return CustomerInterface
      */
-    private function createOrUpdate(GraphUser $facebookUser, AccessToken $accessToken)
+    private function createOrUpdateAndLogin(GraphUser $facebookUser, AccessToken $accessToken)
     {
         if (!$this->customer->getId()) {
             $this->customer->setEmail($facebookUser->getEmail());
@@ -212,7 +212,11 @@ class Index extends Action
             'sf_access_token', serialize($accessToken)
         );
 
-        return $this->customerRepository->save($this->customer);
+        $customer = $this->customerRepository->save($this->customer);
+
+        $this->login($customer->getId());
+
+        return $customer;
     }
 
     /**
