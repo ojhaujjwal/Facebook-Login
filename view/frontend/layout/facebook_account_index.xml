@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Scandiweb_FacebookLogin
+ *
+ * @category    Scandiweb
+ * @package     Scandiweb_FacebookLogin
+ * @author      Viktors Vipolzovs <info@scandiweb.com>
+ * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+ */
+-->
+<page>
+    <update handle="customer_account"/>
+
+    <head>
+        <title>Facebook Login</title>
+        <css src="Scandiweb_SocialConnect::css/connect.css" media="all"/>
+    </head>
+
+    <body>
+        <referenceBlock name="page.main.title">
+            <action method="setPageTitle">
+                <argument translate="true" name="title" xsi:type="string">Facebook Login</argument>
+            </action>
+        </referenceBlock>
+
+        <referenceContainer name="content">
+            <block class="Scandiweb\SocialConnect\Block\Account" name="facebook.account" template="Scandiweb_FacebookLogin::account.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

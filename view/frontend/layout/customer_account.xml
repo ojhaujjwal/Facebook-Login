@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Scandiweb_FacebookLogin
+ *
+ * @category    Scandiweb
+ * @package     Scandiweb_FacebookLogin
+ * @author      Viktors Vipolzovs <info@scandiweb.com>
+ * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+ */
+-->
+<page>
+    <update handle="customer_account"/>
+
+    <body>
+        <referenceContainer name="customer_account_navigation">
+            <block class="Magento\Framework\View\Element\Html\Link\Current" name="facebook-login">
+                <arguments>
+                    <argument name="label" xsi:type="string" translate="true">Facebook Login</argument>
+                    <argument name="path" xsi:type="string">facebook/account</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
