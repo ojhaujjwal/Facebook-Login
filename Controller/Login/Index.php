@@ -99,7 +99,7 @@ class Index extends Action
     /**
      * Dispatch request
      *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @return ResponseInterface
      */
     public function execute()
     {

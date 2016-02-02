@@ -83,27 +83,20 @@ class Account extends Template
     {
         $facebookUser = null;
         $customer = $this->customerSession->getCustomerData();
-        $accessToken = $customer->getCustomAttribute('sf_access_token')->getValue();
+        $accessTokenAttribute = $customer->getCustomAttribute('sf_access_token');
 
-        if ($accessToken) {
+        if ($accessTokenAttribute) {
             /** @var $accessToken \Facebook\Authentication\AccessToken */
-            $accessToken = unserialize($accessToken);
+            $accessToken = unserialize($accessTokenAttribute->getValue());
+
             try {
                 $facebookUser = $this->facebook->get(
                     '/me?fields=' . static::FIELDS, $accessToken
                 )->getGraphUser()->all();
             } catch (FacebookSDKException $e) {
                 $this->logger->addError($e->getMessage());
-
-                $this->messageManager->addError(__(
-                    "The user has not authorized application."
-                ));
             } catch (\Exception $e) {
                 $this->logger->addError($e->getMessage());
-
-                $this->messageManager->addError(__(
-                    "Oops. Something went wrong! Please try again later."
-                ));
             }
         }
 
