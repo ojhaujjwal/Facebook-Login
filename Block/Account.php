@@ -22,11 +22,11 @@ use Exception;
 class Account extends Template
 {
     /**
-     * Get a facebook user data (TODO remove duplicate)
+     * Get a facebook user data
      *
      * @see https://developers.facebook.com/docs/graph-api/reference/user
      */
-    const FIELDS = 'id,email,first_name,last_name,middle_name,gender';
+    const FIELDS = 'id,email,first_name,last_name,middle_name,gender,picture';
 
     /**
      * @var Facebook

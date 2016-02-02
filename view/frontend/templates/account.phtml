@@ -20,6 +20,7 @@
 
         <div class="block-content">
             <ul>
+                <li><img src="<?php echo $facebookUser['picture']['url']; ?>" alt="<?php echo __('Profile picture'); ?>"></li>
                 <li><?php echo __('Id'); ?>: <strong><?php echo $facebookUser['id']; ?></strong></li>
                 <li><?php echo __('Email'); ?>: <strong><?php echo $facebookUser['email']; ?></strong></li>
                 <li><?php echo __('Firstname'); ?>: <strong><?php echo $facebookUser['first_name']; ?></strong></li>
@@ -31,7 +32,7 @@
                     <li><?php echo __('Gender'); ?>: <strong><?php echo $facebookUser['gender']; ?></strong></li>
                 <?php endif; ?>
             </ul>
-
+            
             <hr>
 
             <a href="<?php echo $this->getUrl('facebook/login/disconnect'); ?>"><?php echo __('Disconnect'); ?></a>
