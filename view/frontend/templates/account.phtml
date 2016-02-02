@@ -1,0 +1,46 @@
+<?php
+/**
+ * Scandiweb_FacebookLogin
+ *
+ * @category    Scandiweb
+ * @package     Scandiweb_FacebookLogin
+ * @author      Viktors Vipolzovs <info@scandiweb.com>
+ * @copyright   Copyright (c) 2016 Scandiweb, Ltd (http://scandiweb.com)
+ */
+?>
+<?php /** @var $this Scandiweb\FacebookLogin\Block\Account */ ?>
+
+<?php $facebookUser = $this->getFacebookUser(); ?>
+
+<?php if ($facebookUser): ?>
+    <div class="block block-dashboard-info">
+        <div class="block-title">
+            <strong><?php echo __('Facebook User'); ?></strong>
+        </div>
+
+        <div class="block-content">
+            <ul>
+                <li><img src="<?php echo $facebookUser['picture']['url']; ?>" alt="<?php echo __('Profile picture'); ?>"></li>
+                <li><?php echo __('Id'); ?>: <strong><?php echo $facebookUser['id']; ?></strong></li>
+                <li><?php echo __('Email'); ?>: <strong><?php echo $facebookUser['email']; ?></strong></li>
+                <li><?php echo __('Firstname'); ?>: <strong><?php echo $facebookUser['first_name']; ?></strong></li>
+                <li><?php echo __('Lastname'); ?>: <strong><?php echo $facebookUser['last_name']; ?></strong></li>
+                <?php if (!empty($facebookUser['middle_name'])): ?>
+                    <li><?php echo __('Middlename'); ?>: <strong><?php echo $facebookUser['middle_name']; ?></strong></li>
+                <?php endif; ?>
+                <?php if (!empty($facebookUser['gender'])): ?>
+                    <li><?php echo __('Gender'); ?>: <strong><?php echo $facebookUser['gender']; ?></strong></li>
+                <?php endif; ?>
+            </ul>
+            
+            <hr>
+
+            <a href="<?php echo $this->getUrl('facebook/login/disconnect'); ?>"><?php echo __('Disconnect'); ?></a>
+        </div>
+    </div>
+<?php else: ?>
+    <p><?php echo __('You can connect store account with your Facebook account so you could login easier in the future.'); ?></p>
+    <strong>
+        <a href="<?php echo $this->getLoginUrl(); ?>"><?php echo __('Connect'); ?></a>
+    </strong>
+<?php endif; ?>

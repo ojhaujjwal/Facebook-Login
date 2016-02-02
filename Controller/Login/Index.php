@@ -14,6 +14,7 @@ use Exception;
 use Facebook\Authentication\AccessToken;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\GraphNodes\GraphUser;
+use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\InputException;
 use Scandiweb\FacebookLogin\Api\CustomerRepositoryInterface;
@@ -57,6 +58,11 @@ class Index extends Action
     private $customerRepository;
 
     /**
+     * @var AccountManagementInterface
+     */
+    private $accountManagement;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -74,6 +80,7 @@ class Index extends Action
      * @param Session                     $customerSession
      * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
+     * @param AccountManagementInterface  $accountManagement
      * @param Logger                      $logger
      * @param Config                      $config
      */
@@ -83,6 +90,7 @@ class Index extends Action
         Session $customerSession,
         CustomerInterface $customer,
         CustomerRepositoryInterface $customerRepository,
+        AccountManagementInterface $accountManagement,
         Logger $logger,
         Config $config
     ) {
@@ -90,6 +98,7 @@ class Index extends Action
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         $this->customerRepository = $customerRepository;
+        $this->accountManagement = $accountManagement;
         $this->logger = $logger;
         $this->config = $config;
 
@@ -99,7 +108,7 @@ class Index extends Action
     /**
      * Dispatch request
      *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @return ResponseInterface
      */
     public function execute()
     {
@@ -116,28 +125,37 @@ class Index extends Action
                     $facebookUser->getId()
                 );
 
-                if (!is_null($customer)) {
-                    $this->login($customer->getId());
+                if ($this->customerSession->getId()) {
+                    $this->customer = $this->customerSession->getCustomerData();
+                    $this->createOrUpdateAndLogin($facebookUser, $accessToken);
 
                     $this->messageManager->addSuccess(__(
-                        "You have successfully logged in using your Facebook account."
+                        "Your Facebook account is now connected to your account at our store."
                     ));
                 } else {
-                    try {
-                        $this->customer = $this->customerRepository->get($facebookUser->getEmail());
-                    } finally {
-                        $customer = $this->createOrUpdate($facebookUser, $accessToken);
-                        $this->login($customer->getId());
+                    if (!is_null($customer)) {
+                        $this->customer = $customer;
+                        $this->createOrUpdateAndLogin($facebookUser, $accessToken);
 
-                        if ($this->customer->getId() == $customer->getId()) {
-                            $this->messageManager->addSuccess(__(
-                                "We have discovered you already have an account at our store."
-                                . " Your Facebook account is now connected to your store account."
-                            ));
-                        } else {
-                            $this->messageManager->addSuccess(__(
-                                "Your Facebook account is now connected to your new user account at our store."
-                            ));
+                        $this->messageManager->addSuccess(__(
+                            "You have successfully logged in using your Facebook account."
+                        ));
+                    } else {
+                        try {
+                            $this->customer = $this->customerRepository->get($facebookUser->getEmail());
+                        } finally {
+                            $customer = $this->createOrUpdateAndLogin($facebookUser, $accessToken);
+
+                            if ($this->customer->getId() == $customer->getId()) {
+                                $this->messageManager->addSuccess(__(
+                                    "We have discovered you already have an account at our store."
+                                    . " Your Facebook account is now connected to your store account."
+                                ));
+                            } else {
+                                $this->messageManager->addSuccess(__(
+                                    "Your Facebook account is now connected to your new user account at our store."
+                                ));
+                            }
                         }
                     }
                 }
@@ -180,14 +198,14 @@ class Index extends Action
     }
 
     /**
-     * Create or update user by using data from facebook
+     * Create or update user by using data from facebook and login to store
      *
      * @param GraphUser   $facebookUser
      * @param AccessToken $accessToken
      *
      * @return CustomerInterface
      */
-    private function createOrUpdate(GraphUser $facebookUser, AccessToken $accessToken)
+    private function createOrUpdateAndLogin(GraphUser $facebookUser, AccessToken $accessToken)
     {
         if (!$this->customer->getId()) {
             $this->customer->setEmail($facebookUser->getEmail());
@@ -203,7 +221,15 @@ class Index extends Action
             'sf_access_token', serialize($accessToken)
         );
 
-        return $this->customerRepository->save($this->customer);
+        if ($this->customer->getId()) {
+            $customer = $this->customerRepository->save($this->customer);
+        } else {
+            $customer = $this->accountManagement->createAccount($this->customer);
+        }
+
+        $this->login($customer->getId());
+
+        return $customer;
     }
 
     /**
