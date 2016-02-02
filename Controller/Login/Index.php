@@ -14,6 +14,7 @@ use Exception;
 use Facebook\Authentication\AccessToken;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\GraphNodes\GraphUser;
+use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\InputException;
 use Scandiweb\FacebookLogin\Api\CustomerRepositoryInterface;
@@ -57,6 +58,11 @@ class Index extends Action
     private $customerRepository;
 
     /**
+     * @var AccountManagementInterface
+     */
+    private $accountManagement;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -74,6 +80,7 @@ class Index extends Action
      * @param Session                     $customerSession
      * @param CustomerInterface           $customer
      * @param CustomerRepositoryInterface $customerRepository
+     * @param AccountManagementInterface  $accountManagement
      * @param Logger                      $logger
      * @param Config                      $config
      */
@@ -83,6 +90,7 @@ class Index extends Action
         Session $customerSession,
         CustomerInterface $customer,
         CustomerRepositoryInterface $customerRepository,
+        AccountManagementInterface $accountManagement,
         Logger $logger,
         Config $config
     ) {
@@ -90,6 +98,7 @@ class Index extends Action
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         $this->customerRepository = $customerRepository;
+        $this->accountManagement = $accountManagement;
         $this->logger = $logger;
         $this->config = $config;
 
@@ -212,7 +221,11 @@ class Index extends Action
             'sf_access_token', serialize($accessToken)
         );
 
-        $customer = $this->customerRepository->save($this->customer);
+        if ($this->customer->getId()) {
+            $customer = $this->customerRepository->save($this->customer);
+        } else {
+            $customer = $this->accountManagement->createAccount($this->customer);
+        }
 
         $this->login($customer->getId());
 
