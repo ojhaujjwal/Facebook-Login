@@ -14,7 +14,7 @@
 
     <body>
         <referenceContainer name="page.messages">
-            <block class="Scandiweb\SocialConnect\Block\Messages" name="scandiweb.facebooklogin.message"/>
+            <block class="Scandiweb\FacebookLogin\Block\Messages" name="scandiweb.facebooklogin.message"/>
         </referenceContainer>
     </body>
 </page>
