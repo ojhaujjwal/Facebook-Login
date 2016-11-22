@@ -14,7 +14,7 @@ use Facebook\Exceptions\FacebookSDKException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Customer\Model\Session;
-use Scandiweb\FacebookLogin\Model\Facebook\Facebook;
+use Scandiweb\FacebookLogin\Model\Facebook\Facebook as FacebookModel;
 use Scandiweb\FacebookLogin\Logger\Logger;
 use Magento\Framework\Message\ManagerInterface;
 use Exception;
@@ -29,7 +29,7 @@ class Account extends Template
     const FIELDS = 'id,email,first_name,last_name,middle_name,gender,picture';
 
     /**
-     * @var Facebook
+     * @var FacebookModel
      */
     protected $facebook;
 
@@ -53,7 +53,7 @@ class Account extends Template
      *
      * @param Context          $context
      * @param array            $data
-     * @param Facebook         $facebook
+     * @param FacebookModel    $facebook
      * @param Session          $customerSession
      * @param ManagerInterface $messageManager
      * @param Logger           $logger
@@ -61,7 +61,7 @@ class Account extends Template
     public function __construct(
         Context $context,
         array $data,
-        Facebook $facebook,
+        FacebookModel $facebook,
         Session $customerSession,
         ManagerInterface $messageManager,
         Logger $logger
